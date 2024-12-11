@@ -1,29 +1,3 @@
-// let isLocked = false;
-// let lockoutEnd = 0;
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   console.log("Received message:", message); // Debugging
-
-//   if (message.type === "toggleExtension") {
-//     const isEnabled = message.isEnabled;
-//     console.log("Extension enabled:", isEnabled); // Debugging
-//   }
-
-//   if (message.type === "videoEnded" && !isLocked) {
-//     console.log("Video ended, starting lockout."); // Debugging
-//     isLocked = true;
-//     lockoutEnd = Date.now() + 1 * 60 * 1000; // 5 minutes
-//     chrome.tabs.remove(sender.tab.id); // Close YouTube tab
-//   }
-
-//   if (message.type === "checkLockout") {
-//     const remainingTime = lockoutEnd - Date.now();
-//     console.log("Checking lockout:", { isLocked, remainingTime }); // Debugging
-//     sendResponse({ isLocked, remainingTime });
-//   }
-// });
-
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Message received in background.js:", message); // Debugging
 
@@ -32,68 +6,64 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // Check if sender's tab information is available
     if (sender.tab && sender.tab.id) {
-      console.log("Closing YouTube tab with ID:", sender.tab.id); // Debugging
+      console.log("Closing YouTube tab with ID:", sender.tab.id); 
       chrome.tabs.remove(sender.tab.id, () => {
         if (chrome.runtime.lastError) {
-          console.error("Failed to close tab:", chrome.runtime.lastError.message); // Debugging
+          console.error("Failed to close tab:", chrome.runtime.lastError.message); 
         } else {
-          console.log("Tab closed successfully!"); // Debugging
+          console.log("Tab closed successfully!");
+        // Save the timestamp of closure
+        chrome.storage.local.set({ lastClosedTime: Date.now() }, () => {
+          console.log("Stored last closed time after closing tab.");
+        });
         }
       });
     } else {
-      console.warn("Sender tab information is missing."); // Debugging
+      console.warn("Sender tab information is missing."); 
     }
   }
 });
 
 
-// Store the time when YouTube was last closed
-chrome.storage.local.get("lastClosedTime", (data) => {
-  const lastClosedTime = data.lastClosedTime;
-  console.log("Last closed time from storage:", lastClosedTime);
+
+
+// Listen for tab creation
+chrome.tabs.onCreated.addListener((tab) => {
+  console.log("New tab created:", tab);
+
+  // Check if the tab already has a URL
+  if (tab.url && tab.url.includes("youtube.com")) {
+    handleYouTubeTab(tab);
+  } else {
+    console.log("New tab has no URL yet, listening for updates...");
+  }
 });
 
-/// Listen for tab closure (YouTube tab)
-chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  // Check if the closed tab was a YouTube tab
-  chrome.tabs.get(tabId, (tab) => {
-    if (tab.url && tab.url.includes("youtube.com")) {
-      const currentTimestamp = Date.now();
-      console.log("YouTube tab closed at:", currentTimestamp);
-      // Save the current timestamp in chrome.storage.local
-      chrome.storage.local.set({ lastClosedTime: currentTimestamp }, () => {
-        console.log("Stored last closed time:", currentTimestamp);
+// Listen for tab updates (e.g., when the URL becomes available)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url && changeInfo.url.includes("youtube.com")) {
+    console.log("YouTube tab detected on update:", tab);
+    handleYouTubeTab(tab);
+  }
+});
+
+// Function to handle YouTube tab logic
+function handleYouTubeTab(tab) {
+  const currentTime = Date.now();
+
+  // check time from shutting down YT tab
+  chrome.storage.local.get("lastClosedTime", (data) => {
+    const lastClosedTime = data.lastClosedTime || 0;
+    console.log("Last closed time retrieved from storage:", lastClosedTime);
+
+    // do not allow YT tab to open before 2 minutes of shutting down
+    if (currentTime - lastClosedTime < 2 * 60 * 1000) {
+      console.log("YouTube was recently closed. Blocking this tab...");
+      chrome.tabs.remove(tab.id, () => {
+        console.log("YouTube tab closed automatically.");
       });
+    } else {
+      console.log("Allowed YouTube: More than 2 minutes have passed.");
     }
   });
-});
-
-// Listen for new tab creation (Check if the new tab is YouTube)
-chrome.tabs.onCreated.addListener((tab) => {
-  if (tab.url && tab.url.includes("youtube.com")) {
-    const currentTime = Date.now();
-
-    // Get the last closed time from chrome.storage.local
-    chrome.storage.local.get("lastClosedTime", (data) => {
-      const lastClosed = data.lastClosedTime;
-      console.log("Last closed time from storage:", lastClosed);
-      
-      // If the timestamp is missing, allow the YouTube tab to open
-      if (!lastClosed) {
-        console.log("No last closed time found. Allowing YouTube.");
-        return;
-      }
-
-      // Check if YouTube was recently closed (within 5 minutes)
-      if (currentTime - lastClosed < 1 * 60 * 1000) {
-        console.log("YouTube is locked for the next 5 minutes.");
-        // Close the YouTube tab immediately after opening
-        chrome.tabs.remove(tab.id, () => {
-          console.log("YouTube tab closed automatically.");
-        });
-      } else {
-        console.log("5 minutes have passed, YouTube can be opened.");
-      }
-    });
-  }
-});
+}

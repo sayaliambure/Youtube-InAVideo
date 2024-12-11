@@ -11,7 +11,7 @@ function updateUI(isEnabled) {
 // Initialize UI
 chrome.storage.local.get("isEnabled", (data) => {
   const isEnabled = data.isEnabled || false; // Default to false
-  console.log("Initial state:", isEnabled); // Debugging
+  console.log("Initial state:", isEnabled); 
   updateUI(isEnabled);
 });
 
@@ -20,7 +20,7 @@ toggleButton.addEventListener("click", () => {
   chrome.storage.local.get("isEnabled", (data) => {
     const isEnabled = !(data.isEnabled || false); // Toggle state
     chrome.storage.local.set({ isEnabled }, () => {
-      console.log("State updated:", isEnabled); // Debugging
+      console.log("State updated:", isEnabled); 
       updateUI(isEnabled);
       chrome.runtime.sendMessage({ type: "toggleExtension", isEnabled });
     });
