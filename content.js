@@ -23,7 +23,7 @@ function initializeScript() {
   if (video) {
     console.log("Video element detected.");
     video.addEventListener("ended", () => {
-      console.log("Video ended.");
+      console.log("Video ended. Sending message to background.js...");
       chrome.runtime.sendMessage({ type: "videoEnded" }, () => {
         
       });

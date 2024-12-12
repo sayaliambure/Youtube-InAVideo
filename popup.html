@@ -7,9 +7,14 @@
 </head>
 <body>
   <h1>Binge Controller</h1>
+  
   <button id="toggle">Enable</button>
   <p id="status">Status: Disabled</p>
   
+  <label for="videoCount">Number of videos to watch:</label>
+  <input type="number" id="videoCount" min="1" value="1" />
+  <button id="saveSettings">Save</button>
+
   <script src="popup.js"></script>
 </body>
 </html>

@@ -27,3 +27,25 @@ toggleButton.addEventListener("click", () => {
   });
 });
 
+// Set default value for maxVideos if not set
+chrome.storage.local.get("maxVideos", (data) => {
+  const maxVideos = data.maxVideos || 1; // Default to 1
+  document.getElementById("videoCount").value = maxVideos;
+});
+
+// Save settings when user clicks "Save"
+document.getElementById("saveSettings").addEventListener("click", () => {
+  const videoCount = parseInt(document.getElementById("videoCount").value, 10);
+
+  if (videoCount > 0) {
+    chrome.storage.local.set({ maxVideos: videoCount }, () => {
+      console.log(`Max videos set to: ${videoCount}`);
+      alert(`Max videos limit: ${videoCount}`);
+    });
+  } else {
+    // If the input is invalid, reset to default
+    chrome.storage.local.set({ maxVideos: 1 }, () => {
+      alert("Invalid input. Defaulting to 1 max video.");
+    });
+  }
+});
