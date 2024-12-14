@@ -3,18 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Youtube Binge Controller</title>
+  <title>YT Binge Controller</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap'); /* Matching font */
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(145deg, rgba(20, 20, 40, 0.85), rgba(10, 10, 25, 0.9)); /* Subtle gradient */
+      color: #ffffff;
+      width: 320px;
+      height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); /* Subtle shadow for depth */
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    #status {
+      font-size: 14px;
+      margin: 10px 0;
+      color: #cfcfcf;
+    }
+
+    button {
+      background: rgba(36, 36, 50, 0.8); /* Darker translucent gray-black */
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin: 6px, 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: rgba(80, 80, 100, 0.9); /* Slightly lighter on hover */
+      transform: scale(1.05); /* Subtle hover scaling */
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2); /* Light translucent input */
+      color: #ffffff;
+      text-align: center;
+      margin-left: 10px; /* Spacing for inline layout */
+      font-size: 15px;
+    }
+
+    input[type="number"]::placeholder {
+      color: #cccccc;
+    }
+
+    label {
+      font-size: 15px;
+      margin-right: 8px; /* Inline label spacing */
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center; /* Inline alignment */
+      margin-bottom: 20px;
+    }
+
+    .container {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .footer {
+      font-size: 13px;
+      color: #a1a1a1;
+      margin-top: 2px;
+    }
+
+    .popup-box {
+      padding: 20px;
+      background: rgba(30, 30, 50, 0.7); /* Translucent box background */
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      width: 90%;
+    }
+  </style>
 </head>
 <body>
-  <h1>Binge Controller</h1>
-  
-  <button id="toggle">Enable</button>
-  <p id="status">Status: Disabled</p>
-  
-  <label for="videoCount">Number of videos to watch:</label>
-  <input type="number" id="videoCount" min="1" value="1" />
-  <button id="saveSettings">Save</button>
-
+  <div class="container">
+    <h1>YT Binge Controller</h1>
+    <button id="toggle">Enable</button>
+    <div id="status">Extension Enabled</div>
+    <div class="form-group">
+      <label for="videoCount">Number of videos to watch:</label>
+      <input type="number" id="videoCount" value="1" min="1" />
+    </div>
+    <button id="saveSettings">Save</button>
+  </div>
+  <div class="footer">Stay in control of your time!</div>
   <script src="popup.js"></script>
 </body>
 </html>
