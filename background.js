@@ -90,7 +90,7 @@ function handleYouTubeTab(tab) {
     }
 
     // Check if YouTube was recently closed
-    if (currentTime - lastClosedTime < 0.5 * 60 * 1000) { 
+    if (currentTime - lastClosedTime < 5 * 60 * 1000) { 
       chrome.tabs.remove(tab.id, () => {
         console.log("YouTube tab closed automatically.");
 
@@ -104,9 +104,12 @@ function handleYouTubeTab(tab) {
               chrome.scripting.executeScript({
                 target: { tabId: newTab.id },
                 func: (remainingTime) => {
-                  alert(`YouTube is disabled for ${remainingTime} seconds.`);
+                  const minutes = Math.floor(remainingTime / 60);
+                  const seconds = remainingTime % 60;
+                  const formattedTime = `${minutes} min ${seconds.toString().padStart(2, '0')} sec`;
+                  alert(`YouTube is disabled for ${formattedTime}. Stay in control of your time!`);
                 },
-                args: [Math.ceil((0.5 * 60 * 1000 - (Date.now() - lastClosedTime)) / 1000)],
+                args: [Math.ceil((5 * 60 * 1000 - (Date.now() - lastClosedTime)) / 1000)],
               });
               // Remove the listener after executing the script
               chrome.tabs.onUpdated.removeListener(listener);
