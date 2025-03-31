@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "YouTube Binge Controller",
   "version": "1.0",
-  "description": "Limits YouTube usage to one video at a time with a lockout period.",
+  "description": "Limits YouTube usage to user-specified number of videos with a lockout period.",
   "permissions": ["scripting", "activeTab", "storage", "tabs"],
   "background": {
     "service_worker": "background.js"
